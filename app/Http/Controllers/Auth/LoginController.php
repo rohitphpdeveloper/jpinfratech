@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+use Illuminate\Support\Str;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -66,7 +67,7 @@ class LoginController extends FrontController
         $votingshare=User::select('voting_share')->where('fd_no',$request->fd_no)->first();
 
        if($votingshare->voting_share==0){
-            return redirect()->back()->with('message', 'You are not eligible for login because your voting share is 0');
+            return redirect()->back()->with('message', 'You are not eligible to vote as you have already voted for the last resolution');
        }else{
              $credentials = array('fd_no' => $request->fd_no, 'password' =>$request->password,'user_type'=>1);
        }
@@ -93,7 +94,7 @@ class LoginController extends FrontController
         $votingshare=User::select('voting_share')->where('fd_no',$request->fd_no)->first();
 
         if($votingshare->voting_share==0){
-            return redirect()->back()->with('message', 'You are not eligible for login because your voting share is 0');
+            return redirect()->back()->with('message', 'You are not eligible to vote as you have already voted for the last resolution');
            }else{
                  $credentials = array('fd_no'=>$request->fd_no,'password'=>$request->password,'user_type'=>2);
            }
@@ -116,6 +117,9 @@ class LoginController extends FrontController
         $this->validate($request, ['fd_no' => 'required|min:5','loginType' =>'required']);
 
         $user=User::where('fd_no',$request->fd_no)->first();
+
+        $mobilemsg = Str::substr($user->mobile, -4);
+        $emailmsg = Str::substr($user->email, 0,5).'xxxxxxxx'. strstr($user->email, "@");
       
         if(!empty($user))
         {
@@ -139,7 +143,7 @@ class LoginController extends FrontController
             $message->to($from['email_to']);
             $message->subject('Evoting:Thankyou');
              });
-            return  redirect('login_otp')->with('message','OTP send in your register Mobile no and Email Id');
+            return  redirect('login_otp')->with('message','OTP send in your register Mobile no '.'xxxxxx'.$mobilemsg. ' and Email Id ' .$emailmsg);
         }else{
             return redirect()->back()->with('message','Invalid Number');
         }

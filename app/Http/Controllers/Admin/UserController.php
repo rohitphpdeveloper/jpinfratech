@@ -419,12 +419,8 @@ class UserController extends Controller
                 'customer' =>$value->customer,
 
                 'collection' =>$value->collection,
-
                 'interest' =>$value->interest,
-
                 'total' =>$value->total,
-
-
 
             ]);
 
@@ -452,7 +448,24 @@ class UserController extends Controller
 
      else{
 
-        $errors[] = array('user_id'=>$value->fd_no,'message'=>'User already exist Please check');} 
+        try{
+
+           User::where('fd_no',$value->fd_no)->update(['voting_share' => $value->voting_share,'name' => $value->name,'email' => $value->email,'mobile' =>$value->mobile,'password' => bcrypt(rand(10000,99999)),'user_type' =>$value->user_type,'prn_amt' =>$value->prn_amt,'int_amt' =>$value->int_amt,'mat_date' =>$value->mat_date,'roi' =>$value->roi,'adr1' =>$value->adr1,'adr2' =>$value->adr2,'adr3' =>$value->adr3,'adr4' =>$value->adr4,'email2' =>$value->email2,'pin' =>$value->pin,'pan' =>$value->pan,'sale_order' =>$value->sale_order,'customer' =>$value->customer,'collection' =>$value->collection,'interest' =>$value->interest,'total' =>$value->total]);
+
+             $errors[] = array('user_id'=>$value->fd_no,'message'=>'successfully update user');
+
+              }
+
+              catch(\Exception $e)
+
+              {
+
+                $errors[] = array('user_id'=>$value->fd_no,'message'=>'Update Error Please check excel sheet');
+
+              }
+
+
+        } 
 
      }
 
